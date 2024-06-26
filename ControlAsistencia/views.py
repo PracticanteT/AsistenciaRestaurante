@@ -3,38 +3,35 @@ from .models import Empleado
 from django.http import JsonResponse
 from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.timezone import make_aware
+from django.utils.timezone import make_aware, now
 from django.http import HttpResponse
 from openpyxl import Workbook
-from django.utils.timezone import now
-from django.utils import timezone
-
-
-
 
 @csrf_exempt
 def registro_asistencia(request):
     if request.method == 'POST':
-        codigo = request.POST.get('codigo').strip()  # Asegurarse de quitar espacios innecesarios
-        # Intenta obtener el empleado o crea un registro mínimo con solo el código
-        empleado, created = Empleado.objects.get_or_create(
-            codigo=codigo,
-            defaults={
-                'nombre': 'Nombre temporal',  # Evita dejarlo completamente vacío si es un campo requerido
-                'cedula': 'Cédula temporal',  # Evita dejarlo completamente vacío si es un campo requerido
-                'fecha_registro': now().date(),  # Fecha actual con zona horaria
-                'hora_registro': now().time(),  # Hora actual con zona horaria, corregido
-            }
-        )
-        # Información para el cliente sobre si el empleado fue creado o encontrado
+        codigo = request.POST.get('codigo').strip()
+        try:
+            empleado = Empleado.objects.get(codigo=codigo)  # Intenta obtener el empleado
+            empleado.fecha_registro = now().date()
+            empleado.hora_registro = now().time()
+            empleado.save()  # Guarda los cambios en la base de datos
+            mensaje = 'Registro del empleado actualizado con la hora actual.'
+        except Empleado.DoesNotExist:
+            mensaje = 'Error: Empleado no encontrado.'
+            empleado = None
+
         response_data = {
-            'codigo': empleado.codigo,
-            'nombre': empleado.nombre,
-            'cedula': empleado.cedula,
-            'fecha': empleado.fecha_registro.strftime('%Y-%m-%d'),
-            'hora': empleado.hora_registro.strftime('%H:%M:%S'),
-            'mensaje': 'Empleado creado exitosamente con el código proporcionado.' if created else 'Empleado encontrado con detalles existentes.'
+            'codigo': codigo,
+            'mensaje': mensaje
         }
+        if empleado:
+            response_data.update({
+                'nombre': empleado.nombre,
+                'cedula': empleado.cedula,
+                'fecha': empleado.fecha_registro.strftime('%Y-%m-%d'),
+                'hora': empleado.hora_registro.strftime('%H:%M:%S'),
+            })
         return JsonResponse(response_data)
 
     return render(request, 'ControlAsistencia/registro_asistencia.html')
