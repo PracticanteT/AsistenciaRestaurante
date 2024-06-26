@@ -11,11 +11,13 @@ from openpyxl import Workbook
 def registro_asistencia(request):
     if request.method == 'POST':
         codigo = request.POST.get('codigo').strip()
+        hora_cliente = request.POST.get('hora_cliente').strip()
         try:
-            empleado = Empleado.objects.get(codigo=codigo)  # Intenta obtener el empleado
+            empleado = Empleado.objects.get(codigo=codigo)
             empleado.fecha_registro = now().date()
             empleado.hora_registro = now().time()
-            empleado.save()  # Guarda los cambios en la base de datos
+            empleado.hora_marcacion_real = hora_cliente
+            empleado.save()
             mensaje = 'Registro del empleado actualizado con la hora actual.'
         except Empleado.DoesNotExist:
             mensaje = 'Error: Empleado no encontrado.'
@@ -30,7 +32,7 @@ def registro_asistencia(request):
                 'nombre': empleado.nombre,
                 'cedula': empleado.cedula,
                 'fecha': empleado.fecha_registro.strftime('%Y-%m-%d'),
-                'hora': empleado.hora_registro.strftime('%H:%M:%S'),
+                'hora': empleado.hora_marcacion_real,
             })
         return JsonResponse(response_data)
 
@@ -50,7 +52,7 @@ def exportar_registros_excel(request):
         wb = Workbook()
         ws = wb.active
         ws.title = "Registros de Asistencia"
-        ws.append(['Código', 'Nombre', 'Cédula', 'Fecha', 'Hora'])
+        ws.append(['Código', 'Nombre', 'Cédula', 'Fecha', 'Hora de Marcación'])
         
         empleados = Empleado.objects.filter(fecha_registro__range=[fecha_inicio, fecha_fin])
         for empleado in empleados:
@@ -58,8 +60,8 @@ def exportar_registros_excel(request):
                 empleado.codigo,
                 empleado.nombre,
                 empleado.cedula,
-                empleado.fecha_registro,
-                empleado.hora_registro.strftime('%H:%M:%S')
+                empleado.fecha_registro.strftime('%Y-%m-%d'),
+                empleado.hora_marcacion_real  # Utiliza la hora de la marcación real
             ])
 
         wb.save(response)

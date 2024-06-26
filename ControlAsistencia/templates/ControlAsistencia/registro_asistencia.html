@@ -32,6 +32,7 @@
                 type: 'post',
                 data: {
                     'codigo': codigo,
+                    'hora_cliente': horaCliente,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
                 success: function(response) {
@@ -39,7 +40,7 @@
                         var errorRegistro = '<p>' + response.mensaje + '</p>';
                         $('#listaEmpleados').prepend(errorRegistro);
                     } else {
-                        var registro = '<p>' + response.nombre + ' - ' + horaCliente + '</p>';
+                        var registro = '<p>' + response.nombre + ' - ' + response.hora + '</p>';
                         $('#listaEmpleados').prepend(registro);  // Añade al inicio de la lista
                     }
                     mantenerListaCorta();

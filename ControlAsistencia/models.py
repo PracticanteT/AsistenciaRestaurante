@@ -6,6 +6,7 @@ class Empleado(models.Model):
     cedula = models.CharField(max_length=50)
     fecha_registro = models.DateField()
     hora_registro = models.TimeField()
+    hora_marcacion_real = models.CharField(max_length=8, null=True, blank=True)  
 
     def __str__(self):
         return self.nombre
