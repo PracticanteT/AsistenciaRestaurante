@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Asistencia</title>
+</head>
+<body>
+    <h1>Registro de Asistencia</h1>
+    <form method="post" action="">
+        {% csrf_token %}
+        <label for="codigo">Código del Empleado:</label>
+        <input type="text" id="codigo" name="codigo">
+        <button type="submit">Registrar</button>
+    </form>
+</body>
+</html>
