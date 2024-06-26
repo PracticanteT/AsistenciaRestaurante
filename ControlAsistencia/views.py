@@ -2,13 +2,14 @@ from django.shortcuts import render
 from .models import Empleado
 from django.http import JsonResponse
 import datetime
+from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt  # Temporalmente deshabilitar la protección CSRF para pruebas
 def registro_asistencia(request):
     if request.method == 'POST':
         codigo = request.POST.get('codigo')
         try:
             empleado = Empleado.objects.get(codigo=codigo)
-            # Guarda o procesa la marcación aquí si es necesario
             return JsonResponse({
                 'nombre': empleado.nombre,
                 'genero': empleado.genero,
@@ -17,4 +18,5 @@ def registro_asistencia(request):
             })
         except Empleado.DoesNotExist:
             return JsonResponse({'error': 'Empleado no encontrado'}, status=404)
-    return render(request, 'ControlAsistencia/registro_asistencia.html')
+    else:
+        return render(request, 'ControlAsistencia/registro_asistencia.html')

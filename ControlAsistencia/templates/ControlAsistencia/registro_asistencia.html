@@ -3,14 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Registro de Asistencia</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
     <h1>Registro de Asistencia</h1>
-    <form method="post" action="">
-        {% csrf_token %}
+    <form id="formRegistro" action="" method="post">
         <label for="codigo">Código del Empleado:</label>
-        <input type="text" id="codigo" name="codigo">
-        <button type="submit">Registrar</button>
+        <input type="text" id="codigo" name="codigo" required>
+        <button type="button" onclick="consultarEmpleado()">Ingresar</button>
     </form>
+    <div id="listaEmpleados"></div>
+
+    <script>
+        function consultarEmpleado() {
+            var codigo = $('#codigo').val();  // Obtiene el valor del input
+            $.ajax({
+                url: '',  // La URL actual maneja la solicitud
+                type: 'post',
+                data: {
+                    'codigo': codigo,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    $('#listaEmpleados').append('<p>' + response.nombre + ' - ' + response.hora + '</p>');
+                    $('#codigo').val('');  // Limpia el campo de texto
+                },
+                error: function() {
+                    $('#listaEmpleados').append('<p>Error: Empleado no encontrado.</p>');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
