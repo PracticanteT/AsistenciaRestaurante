@@ -15,10 +15,12 @@
     </form>
 
     <!-- Botón para redirigir a la vista de exportar datos -->
+    {% if user.is_authenticated and user.is_staff %}
     <script type="text/javascript">
         var exportUrl = "{% url 'exportar_form' %}";
     </script>
     <button type="button" onclick="window.location.href=exportUrl">Exportar Datos</button>
+    {% endif %}
 
     <div id="listaEmpleados"></div>
 

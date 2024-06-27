@@ -7,7 +7,11 @@ from django.utils.timezone import make_aware, now
 from django.http import HttpResponse
 from openpyxl import Workbook
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 
+
+def is_admin(user):
+    return user.is_authenticated and user.groups.filter(name='administradores').exists()
 
 
 @login_required
@@ -42,7 +46,7 @@ def registro_asistencia(request):
 
     return render(request, 'ControlAsistencia/registro_asistencia.html')
 
-
+@user_passes_test(is_admin)
 @login_required
 def exportar_registros_excel(request):
     fecha_inicio = request.GET.get('inicio')
@@ -80,6 +84,9 @@ def exportar_registros_excel(request):
         return response
     else:
         return HttpResponse("Fechas no proporcionadas.")
-    
+
+
+@user_passes_test(is_admin)
 def exportar_form(request):
     return render(request, 'ControlAsistencia/exportar_form.html')
+
