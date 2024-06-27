@@ -6,7 +6,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.timezone import make_aware, now
 from django.http import HttpResponse
 from openpyxl import Workbook
+from django.contrib.auth.decorators import login_required
 
+
+
+@login_required
 @csrf_exempt
 def registro_asistencia(request):
     if request.method == 'POST':
@@ -38,6 +42,8 @@ def registro_asistencia(request):
 
     return render(request, 'ControlAsistencia/registro_asistencia.html')
 
+
+@login_required
 def exportar_registros_excel(request):
     fecha_inicio = request.GET.get('inicio')
     fecha_fin = request.GET.get('fin')
@@ -53,16 +59,22 @@ def exportar_registros_excel(request):
         ws = wb.active
         ws.title = "Registros de Asistencia"
         ws.append(['Código', 'Nombre', 'Cédula', 'Fecha', 'Hora de Marcación'])
-        
+
         empleados = Empleado.objects.filter(fecha_registro__range=[fecha_inicio, fecha_fin])
+        total_registros = empleados.count()
+        
         for empleado in empleados:
             ws.append([
                 empleado.codigo,
                 empleado.nombre,
                 empleado.cedula,
                 empleado.fecha_registro.strftime('%Y-%m-%d'),
-                empleado.hora_marcacion_real  # Utiliza la hora de la marcación real
+                empleado.hora_marcacion_real
             ])
+
+        # Añadir la suma total de los registros
+        ws.append([])
+        ws.append(['Total de registros', total_registros])
 
         wb.save(response)
         return response
@@ -70,4 +82,4 @@ def exportar_registros_excel(request):
         return HttpResponse("Fechas no proporcionadas.")
     
 def exportar_form(request):
-        return render(request, 'ControlAsistencia/exportar_form.html')
+    return render(request, 'ControlAsistencia/exportar_form.html')

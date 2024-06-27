@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Exportar Registros de Asistencia</h1>
-    <form action="{% url 'exportar_excel' %}" method="get">  <!-- Ajusta según necesites, por ejemplo para CSV cambia la URL -->
+    <form action="{% url 'exportar_registros_excel' %}" method="get">
         <label for="inicio">Fecha de Inicio:</label>
         <input type="date" id="inicio" name="inicio" required>
 

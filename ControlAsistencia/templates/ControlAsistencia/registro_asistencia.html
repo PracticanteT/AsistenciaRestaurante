@@ -13,6 +13,13 @@
         <input type="text" id="codigo" name="codigo" autofocus onkeypress="handleKeyPress(event)">
         <button type="button" onclick="consultarEmpleado()">Ingresar</button>
     </form>
+
+    <!-- Botón para redirigir a la vista de exportar datos -->
+    <script type="text/javascript">
+        var exportUrl = "{% url 'exportar_form' %}";
+    </script>
+    <button type="button" onclick="window.location.href=exportUrl">Exportar Datos</button>
+
     <div id="listaEmpleados"></div>
 
     <script>

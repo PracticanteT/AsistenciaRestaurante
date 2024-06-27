@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import registro_asistencia, exportar_registros_excel, exportar_form
+from . import views
 
 urlpatterns = [
-    path('registro/', registro_asistencia, name='registro_asistencia'),
-    path('exportar/', exportar_form, name='exportar_form'),
-    path('exportar-excel/', exportar_registros_excel, name='exportar_excel'),
+    path('registro/', views.registro_asistencia, name='registro_asistencia'),
+    path('exportar/', views.exportar_form, name='exportar_form'),
+    path('exportar-excel/', views.exportar_registros_excel, name='exportar_registros_excel'),
 ]
