@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Registro de Asistencia</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'AsistenciaRestaurante/styles/registro_asistencia.css' %}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
@@ -22,7 +24,19 @@
     <button type="button" onclick="window.location.href=exportUrl">Exportar Datos</button>
     {% endif %}
 
-    <div id="listaEmpleados"></div>
+    <div id="listaEmpleados">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Hora</th>
+                </tr>
+            </thead>
+            <tbody id="empleadosTabla">
+                <!-- Aquí se añadirán las filas con los registros de los empleados -->
+            </tbody>
+        </table>
+    </div>
 
     <script>
         function consultarEmpleado() {
@@ -49,8 +63,8 @@
                         var errorRegistro = '<p>' + response.mensaje + '</p>';
                         $('#listaEmpleados').prepend(errorRegistro);
                     } else {
-                        var registro = '<p>' + response.nombre + ' - ' + response.hora + '</p>';
-                        $('#listaEmpleados').prepend(registro);  // Añade al inicio de la lista
+                        var registro = '<tr><td>' + response.nombre + '</td><td>' + response.hora + '</td></tr>';
+                        $('#empleadosTabla').prepend(registro);  // Añade al inicio de la tabla
                     }
                     mantenerListaCorta();
                     $('#codigo').val('');
@@ -72,7 +86,7 @@
 
         function mantenerListaCorta() {
             var maxItems = 10;
-            var items = $('#listaEmpleados p');
+            var items = $('#empleadosTabla tr');
             if (items.length > maxItems) {
                 items.slice(maxItems).remove();
             }

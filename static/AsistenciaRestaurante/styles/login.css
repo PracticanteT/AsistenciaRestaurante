@@ -1,0 +1,78 @@
+body {
+    font-family: Arial, sans-serif;
+    background-image: url("{% static 'AsistenciaRestaurante/images/fondo.jpg' %}");
+    background-color: #f7f7f7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+
+
+.container {
+    width: 100%;
+    max-width: 300px;
+    background-color: white;
+    padding: 30px 18px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: -300px;
+    
+}
+
+
+hr {
+    width: 80%;
+    opacity: 40%;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+}
+
+form input {
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 20px;
+    border: 1px solid lightblue;
+    border-radius: 3px;
+    background-color: white;
+    width: 93%;
+}
+
+form p {
+    width: 80%;
+}
+
+form button {
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    background-color: #002c5f;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    width: 80%;
+    font-size: 18px;
+}
+
+form button:hover {
+    background-color: #001f3f;
+}
+
+form label {
+    
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold; /* Ejemplo de cómo cambiar el peso de la fuente */
+    color: black;    /* Ejemplo de cómo cambiar el color del texto */
+    text-align: left;  /* Ejemplo de cómo alinear el texto */
+    font-size: 18px;   /* Ejemplo de cómo cambiar el tamaño del texto */
+}
