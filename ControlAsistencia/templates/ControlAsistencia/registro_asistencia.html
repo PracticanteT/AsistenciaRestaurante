@@ -32,6 +32,7 @@
     </div>
     {% endif %}
 
+    <div id="mensajeError" style="display: none; color: red; text-align: center; margin-top: 10px;"></div>
     <div id="listaEmpleados">
         <table>
             <thead>
@@ -68,8 +69,11 @@
                 },
                 success: function(response) {
                     if (response.mensaje.includes('Error')) {
-                        var errorRegistro = '<p>' + response.mensaje + '</p>';
-                        $('#listaEmpleados').prepend(errorRegistro);
+                        $('#mensajeError').text(response.mensaje).show();
+                        setTimeout(function() {
+                            $('#mensajeError').fadeOut();
+                            $('#codigo').focus();
+                        }, 3000);
                     } else {
                         var registro = '<tr><td>' + response.nombre + '</td><td>' + response.hora + '</td></tr>';
                         $('#empleadosTabla').prepend(registro);  // Añade al inicio de la tabla
@@ -78,7 +82,11 @@
                     $('#codigo').val('');
                 },
                 error: function() {
-                    $('#listaEmpleados').prepend('<p>Error: Empleado no encontrado.</p>');
+                    $('#mensajeError').text('Error: Empleado no encontrado.').show();
+                    setTimeout(function() {
+                        $('#mensajeError').fadeOut();
+                        $('#codigo').focus();
+                    }, 3000);
                     mantenerListaCorta();
                 }
             });
