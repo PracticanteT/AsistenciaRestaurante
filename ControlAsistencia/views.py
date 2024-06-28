@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
-from .models import Empleado
+from .models import Empleado, Asistencia
 from django.http import JsonResponse
 from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.timezone import make_aware, now
+from django.utils.timezone import make_aware, now, timedelta
 from django.http import HttpResponse
 from openpyxl import Workbook
 from django.contrib.auth.decorators import login_required
@@ -23,25 +23,28 @@ def registro_asistencia(request):
         hora_cliente = request.POST.get('hora_cliente').strip()
         try:
             empleado = Empleado.objects.get(codigo=codigo)
-            empleado.fecha_registro = now().date()
-            empleado.hora_registro = now().time()
-            empleado.hora_marcacion_real = hora_cliente
-            empleado.save()
+            asistencia, created = Asistencia.objects.get_or_create(
+                empleado=empleado,
+                fecha_registro=now().date(),
+                defaults={'hora_marcacion_real': hora_cliente}
+            )
+            if not created:
+                asistencia.hora_marcacion_real = hora_cliente
+                asistencia.save()
             mensaje = 'Registro del empleado actualizado con la hora actual.'
         except Empleado.DoesNotExist:
             mensaje = 'Error: Empleado no encontrado.'
-            empleado = None
 
         response_data = {
             'codigo': codigo,
             'mensaje': mensaje
         }
-        if empleado:
+        if 'empleado' in locals():
             response_data.update({
                 'nombre': empleado.nombre,
                 'cedula': empleado.cedula,
-                'fecha': empleado.fecha_registro.strftime('%Y-%m-%d'),
-                'hora': empleado.hora_marcacion_real,
+                'fecha': asistencia.fecha_registro.strftime('%Y-%m-%d'),
+                'hora': asistencia.hora_marcacion_real
             })
         return JsonResponse(response_data)
 
@@ -63,29 +66,38 @@ def exportar_registros_excel(request):
         wb = Workbook()
         ws = wb.active
         ws.title = "Registros de Asistencia"
-        ws.append(['Código', 'Nombre', 'Cédula', 'Fecha', 'Hora de Marcación'])
+        ws.append(['Código', 'Nombre', 'Cédula', 'Fecha de Registro', 'Hora de Marcación'])
 
-        empleados = Empleado.objects.filter(fecha_registro__range=[fecha_inicio, fecha_fin])
-        total_registros = empleados.count()
-        
-        for empleado in empleados:
-            ws.append([
-                empleado.codigo,
-                empleado.nombre,
-                empleado.cedula,
-                empleado.fecha_registro.strftime('%Y-%m-%d'),
-                empleado.hora_marcacion_real
-            ])
+        empleados = Empleado.objects.all()
+        fechas_rango = [fecha_inicio + timedelta(days=x) for x in range((fecha_fin - fecha_inicio).days + 1)]
 
-        # Añadir la suma total de los registros
-        ws.append([])
-        ws.append(['Total de registros', total_registros])
+        for fecha in fechas_rango:
+            asistencias = Asistencia.objects.filter(fecha_registro=fecha)
+            asistencia_dict = {asistencia.empleado.codigo: asistencia for asistencia in asistencias}
+
+            for empleado in empleados:
+                if empleado.codigo in asistencia_dict:
+                    asistencia = asistencia_dict[empleado.codigo]
+                    ws.append([
+                        empleado.codigo,
+                        empleado.nombre,
+                        empleado.cedula,
+                        asistencia.fecha_registro.strftime('%Y-%m-%d'),
+                        asistencia.hora_marcacion_real
+                    ])
+                else:
+                    ws.append([
+                        empleado.codigo,
+                        empleado.nombre,
+                        empleado.cedula,
+                        fecha.strftime('%Y-%m-%d'),
+                        'No registró'
+                    ])
 
         wb.save(response)
         return response
     else:
         return HttpResponse("Fechas no proporcionadas.")
-    
     
 @user_passes_test(is_admin)
 @login_required   
