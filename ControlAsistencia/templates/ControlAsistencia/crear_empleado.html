@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Empleado</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'AsistenciaRestaurante/styles/crear_empleado.css' %}">
+</head>
+<body>
+    <h1>Crear empleado</h1>
+    <form action="{% url 'crear_empleado' %}" method="post">
+        {% csrf_token %}
+        <label for="codigo">Código:</label>
+        <input type="text" id="codigo" name="codigo" required>
+        
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        
+        <label for="cedula">Cédula:</label>
+        <input type="text" id="cedula" name="cedula" required>
+        
+        <label for="fecha_registro">Fecha de registro:</label>
+        <input type="date" id="fecha_registro" name="fecha_registro" required>
+
+        <div class="button-group">
+            <button type="submit">Guardar</button>
+            <a href="{% url 'registro_asistencia' %}"><button type="button">Volver</button></a>
+        </div>
+    </form>
+</body>
+</html>

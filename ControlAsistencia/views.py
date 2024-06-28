@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Empleado
 from django.http import JsonResponse
 from datetime import datetime
@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from openpyxl import Workbook
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
+from .forms import EmpleadoForm
 
 
 def is_admin(user):
@@ -84,7 +85,22 @@ def exportar_registros_excel(request):
         return response
     else:
         return HttpResponse("Fechas no proporcionadas.")
-
+    
+    
+@user_passes_test(is_admin)
+@login_required   
+def crear_empleado(request):
+    if request.method == 'POST':
+        form = EmpleadoForm(request.POST)
+        if form.is_valid():
+            empleado = form.save(commit=False)
+            empleado.hora_registro = now().time()  # Establece la hora de registro automáticamente
+            empleado.hora_marcacion_real = now().strftime('%H:%M:%S')
+            empleado.save()
+            return redirect('registro_asistencia')  # Redirige a la vista de registro de asistencia después de crear el empleado
+    else:
+        form = EmpleadoForm()
+    return render(request, 'ControlAsistencia/crear_empleado.html', {'form': form})
 
 @user_passes_test(is_admin)
 def exportar_form(request):

@@ -20,8 +20,16 @@
     {% if user.is_authenticated and user.is_staff %}
     <script type="text/javascript">
         var exportUrl = "{% url 'exportar_form' %}";
+        var crearEmpleadoUrl = "{% url 'crear_empleado' %}";
     </script>
-    <button type="button" onclick="window.location.href=exportUrl">Exportar Datos</button>
+    <div class="admin-buttons">
+        <button type="button" class="styled-button" onclick="window.location.href=exportUrl">Exportar Datos</button>
+        <button type="button" class="styled-button" onclick="window.location.href=crearEmpleadoUrl">Crear Empleado</button>
+        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="styled-button">Salir</button>
+        </form>
+    </div>
     {% endif %}
 
     <div id="listaEmpleados">
@@ -29,7 +37,7 @@
             <thead>
                 <tr>
                     <th>Nombre</th>
-                    <th>Hora</th>
+                    <th>Hora de Marcación</th>
                 </tr>
             </thead>
             <tbody id="empleadosTabla">

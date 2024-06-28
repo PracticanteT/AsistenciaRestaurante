@@ -21,8 +21,8 @@ from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('asistencia/', include('ControlAsistencia.urls')),  # Incluye las URLs de ControlAsistencia
+    path('asistencia/', include('ControlAsistencia.urls')),
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
-    # Redirige la URL raíz al login
-    path('', RedirectView.as_view(url=reverse_lazy('login'), permanent=False)),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),  # URL de logout
+    path('', include('django.contrib.auth.urls')),  # Incluye las URLs de autenticación
 ]
