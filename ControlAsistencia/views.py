@@ -21,8 +21,12 @@ def registro_asistencia(request):
     if request.method == 'POST':
         codigo = request.POST.get('codigo').strip()
         hora_cliente = request.POST.get('hora_cliente').strip()
+
+        # Truncar el código a los primeros 11 dígitos
+        codigo_truncado = codigo[:11]
+
         try:
-            empleado = Empleado.objects.get(codigo=codigo)
+            empleado = Empleado.objects.get(codigo=codigo_truncado)
             asistencia, created = Asistencia.objects.get_or_create(
                 empleado=empleado,
                 fecha_registro=now().date(),
@@ -36,7 +40,7 @@ def registro_asistencia(request):
             mensaje = 'Error: Empleado no encontrado.'
 
         response_data = {
-            'codigo': codigo,
+            'codigo': codigo_truncado,  # Devolver el código truncado
             'mensaje': mensaje
         }
         if 'empleado' in locals():

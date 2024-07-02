@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Empleado(models.Model):
-    codigo = models.CharField(max_length=50, unique=True)
+    codigo = models.CharField(max_length=100, unique=True)
     nombre = models.CharField(max_length=100)
     cedula = models.CharField(max_length=50)
     fecha_registro = models.DateField()

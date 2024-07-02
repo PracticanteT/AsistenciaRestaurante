@@ -10,13 +10,13 @@ django.setup()
 from ControlAsistencia.models import Empleado
 
 def load_excel_data(file_path):
-    # Leer el archivo Excel
-    df = pd.read_excel(file_path)
+    # Leer el archivo Excel tratando la columna de códigos como texto
+    df = pd.read_excel(file_path, dtype={'CODIGO': str})  # Especifica que la columna 'CODIGO' debe ser tratada como texto
 
     # Iterar a través de las filas del DataFrame e insertar los datos en la base de datos
     for index, row in df.iterrows():
         Empleado.objects.create(
-            codigo=row['CODIGO'],
+            codigo=row['CODIGO'],  # Asegúrate de que el campo 'codigo' en el modelo Empleado es un CharField
             nombre=row['NOMBRE'],
             cedula=row['NUMCEDULA'],
             fecha_registro=now().date(),
@@ -25,6 +25,6 @@ def load_excel_data(file_path):
 
 if __name__ == "__main__":
     # Ruta del archivo Excel
-    file_path = r'C:\Datos\datos.xlsx'
+    file_path = r'C:\Datos\Data.xlsx'
     load_excel_data(file_path)
     print("Datos cargados con éxito")
