@@ -10,11 +10,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 from .forms import EmpleadoForm
 
-
+# Define una función para verificar si el usuario es un administrador
 def is_admin(user):
     return user.is_authenticated and user.groups.filter(name='administradores').exists()
 
-
+# Vista para registrar asistencia, protegida contra ataques CSRF y requiere autenticación
 @login_required
 @csrf_exempt
 def registro_asistencia(request):
@@ -54,6 +54,8 @@ def registro_asistencia(request):
 
     return render(request, 'ControlAsistencia/registro_asistencia.html')
 
+# Vista para exportar registros a Excel, solo accesible para administradores y requiere autenticación
+@user_passes_test(is_admin)
 @user_passes_test(is_admin)
 @login_required
 def exportar_registros_excel(request):
@@ -103,6 +105,8 @@ def exportar_registros_excel(request):
     else:
         return HttpResponse("Fechas no proporcionadas.")
     
+
+# Vista para crear empleados, solo accesible para administradores y requiere autenticación    
 @user_passes_test(is_admin)
 @login_required   
 def crear_empleado(request):
