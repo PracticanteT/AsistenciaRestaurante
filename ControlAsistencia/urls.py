@@ -18,4 +18,8 @@ urlpatterns = [
 
     # Asigna la función crear_empleado a la URL 'crear-empleado/', y le da un nombre para poder referenciarlo en otros lugares como 'crear_empleado'
     path('crear-empleado/', crear_empleado, name='crear_empleado'),
+
+    path('eliminar_empleado/', views.eliminar_empleado, name='eliminar_empleado'),
+
+    
 ]

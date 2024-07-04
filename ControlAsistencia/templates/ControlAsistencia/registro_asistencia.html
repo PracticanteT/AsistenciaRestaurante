@@ -25,6 +25,7 @@
     <div class="admin-buttons">
         <button type="button" class="styled-button" onclick="window.location.href=exportUrl">Exportar Datos</button>
         <button type="button" class="styled-button" onclick="window.location.href=crearEmpleadoUrl">Crear Empleado</button>
+        <a href="{% url 'eliminar_empleado' %}"><button type="button">Eliminar Empleado</button></a>
         <form action="{% url 'logout' %}" method="post" style="display:inline;">
             {% csrf_token %}
             <button type="submit" class="styled-button">Salir</button>

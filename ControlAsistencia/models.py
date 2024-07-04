@@ -7,9 +7,11 @@ class Empleado(models.Model):
     codigo = models.CharField(max_length=100, unique=True)  # Campo para el código del empleado, debe ser único
     nombre = models.CharField(max_length=100)  # Campo para el nombre del empleado
     cedula = models.CharField(max_length=50)  # Campo para la cédula del empleado
-    fecha_registro = models.DateField()  # Campo para la fecha de registro del empleado
     hora_registro = models.TimeField()  # Campo para la hora de registro del empleado
     hora_marcacion_real = models.CharField(max_length=8, null=True, blank=True)  # Campo opcional para la hora real de marcación
+    centro_de_costos = models.CharField(max_length=100)  # Campo para el centro de costos del empleado
+    cargo = models.CharField(max_length=100)  # Campo para el cargo del empleado
+    fecha_registro = models.DateField()  # Campo para la fecha de registro del empleado
 
     # Método especial que define cómo se representa un objeto de este modelo como una cadena de texto
     def __str__(self):

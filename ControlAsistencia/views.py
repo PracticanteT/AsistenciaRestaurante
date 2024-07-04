@@ -9,11 +9,18 @@ from openpyxl import Workbook
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 from .forms import EmpleadoForm
+from .forms import EmpleadoCodigoForm
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 
 # Define una función para verificar si el usuario es un administrador
 def is_admin(user):
     return user.is_authenticated and user.groups.filter(name='administradores').exists()
 
+
+
+
+0
 # Vista para registrar asistencia, protegida contra ataques CSRF y requiere autenticación
 @login_required
 @csrf_exempt
@@ -107,6 +114,7 @@ def exportar_registros_excel(request):
     
 
 # Vista para crear empleados, solo accesible para administradores y requiere autenticación    
+# Vista para crear empleados, solo accesible para administradores y requiere autenticación    
 @user_passes_test(is_admin)
 @login_required   
 def crear_empleado(request):
@@ -125,4 +133,23 @@ def crear_empleado(request):
 @user_passes_test(is_admin)
 def exportar_form(request):
     return render(request, 'ControlAsistencia/exportar_form.html')
+
+
+@user_passes_test(is_admin)
+@login_required
+def eliminar_empleado(request):
+    if request.method == 'POST':
+        form = EmpleadoCodigoForm(request.POST)
+        if form.is_valid():
+            codigo = form.cleaned_data['codigo'][:11]  # Truncar el código a los primeros 11 dígitos
+            try:
+                empleado = Empleado.objects.get(codigo=codigo)
+                empleado.delete()
+                messages.success(request, 'Empleado eliminado con éxito')
+            except Empleado.DoesNotExist:
+                messages.error(request, 'No se encontró un empleado con ese código')
+            return redirect('eliminar_empleado')
+    else:
+        form = EmpleadoCodigoForm()
+    return render(request, 'ControlAsistencia/eliminar_empleado.html', {'form': form})
 
