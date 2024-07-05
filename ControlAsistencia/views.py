@@ -79,7 +79,7 @@ def exportar_registros_excel(request):
         wb = Workbook()
         ws = wb.active
         ws.title = "Registros de Asistencia"
-        ws.append(['Código', 'Nombre', 'Cédula', 'Fecha de Registro', 'Hora de Marcación'])
+        ws.append(['Código', 'Nombre', 'Cédula', 'Centro de Costos', 'Cargo', 'Fecha de Registro', 'Hora de Marcación'])
 
         empleados = Empleado.objects.all()
         fechas_rango = [fecha_inicio + timedelta(days=x) for x in range((fecha_fin - fecha_inicio).days + 1)]
@@ -87,6 +87,7 @@ def exportar_registros_excel(request):
         for fecha in fechas_rango:
             asistencias = Asistencia.objects.filter(fecha_registro=fecha)
             asistencia_dict = {asistencia.empleado.codigo: asistencia for asistencia in asistencias}
+            total_registros = 0
 
             for empleado in empleados:
                 if empleado.codigo in asistencia_dict:
@@ -95,23 +96,31 @@ def exportar_registros_excel(request):
                         empleado.codigo,
                         empleado.nombre,
                         empleado.cedula,
+                        empleado.centro_de_costos,
+                        empleado.cargo,
                         asistencia.fecha_registro.strftime('%Y-%m-%d'),
                         asistencia.hora_marcacion_real
                     ])
+                    total_registros += 1
                 else:
                     ws.append([
                         empleado.codigo,
                         empleado.nombre,
                         empleado.cedula,
+                        empleado.centro_de_costos,
+                        empleado.cargo,
                         fecha.strftime('%Y-%m-%d'),
                         'No registró'
                     ])
+            
+            # Agregar fila con el total de registros al final del día
+            ws.append(['', '', '', '', '', 'Total de registros:', total_registros])
 
         wb.save(response)
         return response
     else:
         return HttpResponse("Fechas no proporcionadas.")
-    
+
 
 # Vista para crear empleados, solo accesible para administradores y requiere autenticación    
 # Vista para crear empleados, solo accesible para administradores y requiere autenticación    
